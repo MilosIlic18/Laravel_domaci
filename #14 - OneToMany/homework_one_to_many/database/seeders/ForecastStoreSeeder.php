@@ -1,0 +1,37 @@
+<?php
+
+namespace Database\Seeders;
+
+use Faker\Factory;
+use App\Models\Cities;
+use App\Models\Forecast;
+use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+class ForecastStoreSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        //
+        $cities = Cities::all();
+        $this->command->getOutput()->progressStart(count($cities)*5);
+          $faker = Factory::create();
+        foreach($cities as $city){
+            for($i=0;$i<5;$i++){
+                $weatherType = $faker->randomElement(Forecast::WEATHERS);
+                Forecast::create([
+                    'cities_id'=>$city->id,
+                    'temperature'=>$faker->numberBetween(-30,40),
+                    'weather_type'=>$weatherType,
+                    'probability'=>$weatherType==="sunny"?NULL:$faker->numberBetween(1,100),
+                    'date'=>$faker->dateTimeBetween('now', '+30 days')->format('Y-m-d H:i:s')
+                ]);
+                $this->command->getOutput()->progressAdvance();
+            }
+        }
+        $this->command->getOutput()->progressFinish();
+    }
+}
