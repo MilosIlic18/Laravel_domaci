@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Requests\Shipment;
+
+use App\Rules\UserClient;
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreShipmentRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            //
+            'title'             => 'required|string|max:128',
+            'fromCity'         => 'required|string|max:64',
+            'fromCountry'      => 'required|string|max:64',
+            'toCity'           => 'required|string|max:64',
+            'toCountry'        => 'required|string|max:64',
+            'price'             => 'required|integer|min:0',
+            'status'            => 'required|in:in_progress,unassigned,completed,problem',
+            'clientsId'        => ['required',new UserClient()],
+            'details'           => 'nullable|string',
+            'documents'         => 'required|array',
+            'documents.*'       => 'file|mimes:jpg,jpeg,png,webp,pdf,doc,docx|max:10240'
+        ];
+    }
+}
